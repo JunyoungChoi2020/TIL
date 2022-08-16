@@ -32,6 +32,39 @@
         main{
             padding:10px;
         }
+
+        @media (max-width: 500px) {
+            .content {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .content nav {
+                border-top: 1px solid gray;
+                border-right:0px solid gray;
+            }
+
+            .content aside {
+                border-top: 1px solid gray;
+                border-left:0px solid gray;
+            }
+
+            nav, aside {
+                flex-basis: 150px;
+                flex-shrink: 0;
+            }
+            main {
+                order: 0;
+            }
+            nav {
+                order: 1;
+            }
+            aside {
+                order: 2;
+            }
+
+
+        }
     </style>
 </head>
 <body>
