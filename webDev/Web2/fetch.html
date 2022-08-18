@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <title>WEB1 - CSS</title>
+  <meta charset="utf-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="color.js"></script>
+</head>
+<script>
+  let val_lists = ['1.html', '2.html', '3.html', '4.html']
+
+  $(() => {
+    // load nav
+    fetchPage('list.html', '#nav')
+
+    // load main
+    fetchPage('welcome.html', '#description')
+  })
+
+  function fetchPage(page_name, id) {
+    fetch(page_name).then((response) => {
+      response.text().then((text) => {
+        document.querySelector(id).innerHTML = text
+      })
+    })
+  }
+</script>
+
+<style>
+  .container{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .content{
+    display: flex;
+    flex-direction: row;
+  }
+
+  .content nav {
+    /*border-top: 1px solid gray;*/
+    /*border-right: 1px solid gray;*/
+    flex-basis: 150px;
+    padding: 5px 10px 0px 0px;
+    margin-top: 10px;
+  }
+
+  .content main {
+    padding-left: 30px;
+  }
+
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+<body>
+  <div class="container">
+    <div class="test">
+      <input id="night_day" type="button" value="night" onclick="nightDayHandler(this);">
+    </div>
+
+    <header class="head">
+      <h1><a href="index.html">WEB</a></h1>
+    </header>
+
+    <section class="content">
+      <nav>
+        <ol id="nav"></ol>
+      </nav>
+
+      <main>
+        <p id="description"></p>
+      </main>
+
+    </section>
+
+  </div>
+
+</body>
+</html>
