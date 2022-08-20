@@ -7,11 +7,14 @@
   <script src="colors.js"></script>
 </head>
 <style>
-  /*하위 선택자*/
-  ol ol {background-color: green}
+  /*E[attr] 형식*/
+  a[href] {background-color: green}
 
-  /*자식 선택자*/
-  ol > ol {background-color: green}
+  /*E[attr="val"] 형식*/
+  input[type="button"] { background-color: red}
+
+  /*E[attr$='val'] 형식*/
+  a[href$='html'] { background-color: yellow}
 </style>
 <body>
   <h1><a href="index.html">WEB</a></h1>
@@ -27,19 +30,5 @@
   <p>
     Cascading Style Sheets (CSS) is a style sheet language used for describing the presentation of a document written in a markup language. Although most often used to set the visual style of web pages and user interfaces written in HTML and XHTML, the language can be applied to any XML document, including plain XML, SVG and XUL, and is applicable to rendering in speech, or on other media. Along with HTML and JavaScript, CSS is a cornerstone technology used by most websites to create visually engaging webpages, user interfaces for web applications, and user interfaces for many mobile applications.
   </p>
-    <ol>
-      <p>The types of Selector</p>
-      <li>universal</li>
-      <li>
-        <h3>type</h3>
-<!--        2번째 <ol> -> <li> -> <ol>-->
-        <ol>
-          <li>p</li>
-          <li>input</li>
-          <li>...</li>
-        </ol>
-<!--        -->
-      </li>
-    </ol>
 </body>
 </html>
