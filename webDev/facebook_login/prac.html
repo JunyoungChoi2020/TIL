@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</head>
+
+<script>
+    window.fbAsyncInit = function () {
+        FB.init({
+            appId: '3317005078620256',
+            cookie: true,
+            xfbml: true,
+            version: 'v14.0'
+        });
+        FB.AppEvents.logPageView();
+        FB.getLoginStatus(function(res){
+            checkLoginState(res)
+        })
+
+    };
+
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    function checkLoginState(response) {
+        if(response.status === 'connected'){
+            $('#login_status').val('Logout')
+        } else {
+            $('#login_status').val('Login')
+        }
+    }
+
+
+</script>
+
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+<body>
+<!--<fb:login-button-->
+<!--  scope="public_profile,email"-->
+<!--  onlogin="checkLoginState();">-->
+<!--</fb:login-button>-->
+
+<input type="button" id="login_status" value="checking..." onclick="
+    if(this.value === 'Login'){
+        FB.login(function(res_logout){
+            checkLoginState(res_logout)
+            FB.api('/me', function(resp){
+            document.querySelector('#name').innerHTML = 'Welcome, ' + resp.name;
+        })
+        })
+
+    } else if(this.value ==='Logout'){
+        FB.logout(function(res_login){
+            checkLoginState(res_login)
+            FB.api('/me', function(resp){
+            document.querySelector('#name').innerHTML = '';
+        })
+        })
+    }
+"/>
+<span id="name"></span>
+</body>
+</html>
