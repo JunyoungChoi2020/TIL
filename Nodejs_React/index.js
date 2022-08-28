@@ -3,11 +3,10 @@ const app = express()
 const port = 5000
 const mongoose = require("mongoose")
 const { users } = require('./models/users')
-const bodyparser = require('body-parser')
 const hid = require('./config/dev')
 
-app.use(bodyparser.urlencoded({extended: true}));
-app.use(bodyparser.json());
+app.use(express.urlencoded({extended : true}));
+app.use(express.json());
 
 mongoose.connect(hid.mongoURI, {
     useNewUrlParser: true, useUnifiedTopology: true
@@ -18,13 +17,15 @@ app.get('/', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-    const user = new users(req.body);
-
+    const user = new users(req.body)
     user.save((err, doc) => {
-        if(err) throw res.json({success: false, err})
-        return res.status(200).json({
-            success: true
-        })
+        if (err) {
+            return res.json({success: false, err})
+        } else {
+            return res.status(200).json({
+                success: true
+            })
+        }
     })
 })
 
