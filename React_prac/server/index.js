@@ -2,8 +2,8 @@ const express = require("express")
 const app = express()
 const port = 5000
 const mongoose = require("mongoose")
-const { users } = require('./models/users')
-const hid = require('./config/dev')
+const { User } = require('./model/User')
+const hidden = require('./config/dev')
 const cookieParser = require('cookie-parser')
 const { auth } = require('./middleware/auth')
 
@@ -11,16 +11,12 @@ app.use(express.urlencoded({extended : true}));
 app.use(express.json());
 app.use(cookieParser());
 
-mongoose.connect(hid.mongoURI, {
+mongoose.connect(hidden.mongoURI, {
     useNewUrlParser: true, useUnifiedTopology: true
-}).then(() => console.log("MongoDB Connected")).catch(err => console.log(err))
+}).then (() => console.log("MongoDB connected...")).catch(err => console.log(err))
 
-app.get('/', (req, res) => {
-    res.send("hello world! ");
-})
-
-app.post('/api/users/register', (req, res) => {
-    const user = new users(req.body)
+app.post('/api/user/register', (req, res) => {
+    const user = new User(req.body)
     user.save((err, doc) => {
         if (err) {
             return res.json({success: false, err})
@@ -32,8 +28,8 @@ app.post('/api/users/register', (req, res) => {
     })
 })
 
-app.post('/api/users/login', (req, res) => {
-    users.findOne({email: req.body.email}, (err, userInfo) => {
+app.post('/api/user/login', (req, res) => {
+    User.findOne({email: req.body.email}, (err, userInfo) => {
         if(!userInfo) {
             return res.json({
                 loginSuccess: false,
@@ -62,8 +58,8 @@ app.post('/api/users/login', (req, res) => {
     })
 })
 
-app.get('api/users/auth', auth, (req, res) => {
-    res.status(200).json({
+app.get('/api/user/auth', auth, (req, res) => {
+     res.status(200).json({
         _id: req.user._id,
         isAdmin: req.user.role === 0? false : true,
         isAuth: 1,
@@ -75,8 +71,9 @@ app.get('api/users/auth', auth, (req, res) => {
     })
 })
 
-app.get('/api/users/logout', auth, (req, res) => {
-    users.findOneAndUpdate({_id: req.user._id}, {token:""}, (err, user) => {
+
+app.get('/api/user/logout', auth, (req, res) => {
+    User.findOneAndUpdate({'_id':req.user._id}, {'token': ""}, (err, cb) => {
         if(err){
             return res.json({
                 success: false,
@@ -89,4 +86,6 @@ app.get('/api/users/logout', auth, (req, res) => {
         }
     })
 })
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+
+app.listen(port, () => console.log(`app listening on port ${port}!`))

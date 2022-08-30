@@ -1,36 +1,32 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const saltRounds = 10
 const jwt = require('jsonwebtoken')
-const saltRounds = 10;
+const secretkey = require("../config/secretkey").secretkey;
 
 const userSchema = mongoose.Schema({
     name: {
         type: String,
-        maxLength: 50
+        maxlength: 50
     },
     email: {
         type: String,
-        trim: true,
+        trim: 1,
         unique: 1
     },
     password: {
         type: String,
-        minLength: 5
-    },
-    lastname: {
-        type: String,
-        maxLength: 50
+        minlength: 4
     },
     role: {
-        type: Number,
+        type:Number,
         default: 0
     },
-    image: String,
     token: {
-        type: String
+        type: String,
     },
-    tokenExp: {
-        type: Number
+    refreshToken: {
+        type: String
     }
 })
 
@@ -57,22 +53,20 @@ userSchema.pre('save', function (next) {
     }
 })
 
-userSchema.methods.comparePassword = function(planePassword, cb) {
+userSchema.methods.comparePassword = function(planePassword, cb){
     let user = this;
-    bcrypt.compare(planePassword, user.password, function(err, isMatch) {
-        if(err){
-            return cb(err)
-        }
+    bcrypt.compare(planePassword, user.password, function(err, isMatch){
+        if(err){ return err }
         return cb(null, isMatch)
     })
 }
 
-userSchema.methods.generateToken = function(cb){
+userSchema.methods.generateToken = function(cb) {
     let user = this;
-    console.log(user)
-    let token = jwt.sign(user._id.toHexString(), 'secretToken')
 
+    let token = jwt.sign(user._id.toHexString(), 'secretKey')
     user.token = token;
+
     user.save(function(err, user) {
         if(err){
             return cb(err)
@@ -82,17 +76,13 @@ userSchema.methods.generateToken = function(cb){
 }
 
 userSchema.statics.findByToken = function(token, cb) {
-    let user = this
-    jwt.verify(token, 'secretToken', function(err, decodedId) {
-        user.findOne({"_id": decodedId, "token": token}, function(err, userInfo) {
-            if(err){
-                return cb(err);
-            } else {
-                cb(null, userInfo)
-            }
+    jwt.verify(token, secretkey, function(err, decodedId){
+        User.findOne({'_id': decodedId, 'token': token}, function(err, userInfo){
+            if(err){return err};
+            return cb(null, userInfo)
         })
     })
 }
-const users = mongoose.model('users', userSchema)
+const User = mongoose.model('User', userSchema)
 
-module.exports = {users}
+module.exports = { User }
