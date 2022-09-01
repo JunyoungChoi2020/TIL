@@ -15,6 +15,10 @@ mongoose.connect(hidden.mongoURI, {
     useNewUrlParser: true, useUnifiedTopology: true
 }).then (() => console.log("MongoDB connected...")).catch(err => console.log(err))
 
+app.get('/api/hello', (req, res) => {
+    res.send('Hello world!')
+})
+
 app.post('/api/user/register', (req, res) => {
     const user = new User(req.body)
     user.save((err, doc) => {
