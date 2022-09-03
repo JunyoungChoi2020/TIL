@@ -13,9 +13,10 @@ var app = http.createServer(function(request,response){
         'updateForm': './form_update.html'}
 
     if(path_name === '/' || path_name === '/create' || path_name === '/update'){
-        let template = html(queryData, path, '');
-        response.writeHead(200);
-        response.end(template);
+        html(queryData, path, '').then(data =>{
+            response.writeHead(200);
+            response.end(data);
+        });
 
     } else if(path_name === '/create_process'){
         let body = '';

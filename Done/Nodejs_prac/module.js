@@ -46,7 +46,6 @@ const html = {
         let hl = await html.langs(path['data'])
         let html_languages = hl
 
-        console.log(html_languages)
         let getId = queryData.searchParams.get('id');
         let path_name = queryData.pathname;
         let html_form;
@@ -63,7 +62,8 @@ const html = {
             } else {
                 getId = sanitizeHtml(p.parse(getId).base);
                 title = getId;
-                desc = sanitizeHtml(fs.readFileSync(path['data'] + '/' +getId + '.html'))
+                let temp = await fs.readFile(path['data'] + '/' +getId + '.html')
+                desc = sanitizeHtml(temp)
                 html_form = '';
                 html_cud = `<a href="/create">create</a> <a href="/update?id=${getId}">update</a>
                             <form action="/delete" method="post">
@@ -75,7 +75,7 @@ const html = {
         } else if (path_name === '/create'){
             title = ''
             desc = '';
-            html_form = fs.readFileSync(path['createForm']);
+            html_form = await fs.readFile(path['createForm']);
             html_cud = '';
 
         } else if (path_name === '/update'){
@@ -83,8 +83,8 @@ const html = {
             desc = '';
             getId = sanitizeHtml(getId)
             let temp_title = "placeholder=" + getId;
-            let temp_desc = "placeholder=" + sanitizeHtml(fs.readFileSync(path['data'] + '/' +getId + '.html'));
-            html_form = sanitizeHtml(fs.readFileSync(path['updateForm']).toString('utf-8'));
+            let temp_desc = "placeholder=" + sanitizeHtml(await fs.readFile(path['data'] + '/' +getId + '.html'));
+            html_form = sanitizeHtml(await fs.readFile(path['updateForm']).toString('utf-8'));
             html_form = html_form.replace("hidden_id_is_in_here", getId);
             html_form = html_form.replace("placeholder=\"title\"", temp_title);
             html_form = html_form.replace("placeholder=\"description\"", temp_desc);
