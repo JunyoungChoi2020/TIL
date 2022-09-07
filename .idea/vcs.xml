@@ -2,7 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/NestJs/nest-js_prac" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/NotYet/NestJs/nest-js_prac" vcs="Git" />
   </component>
 </project>

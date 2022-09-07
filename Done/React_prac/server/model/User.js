@@ -3,8 +3,9 @@ const bcrypt = require('bcrypt')
 const saltRounds = 10
 const jwt = require('jsonwebtoken')
 const secretkey = require("../config/secretkey").secretkey;
+const Schema = mongoose.Schema;
 
-const userSchema = mongoose.Schema({
+const userSchema = new Schema({
     name: {
         type: String,
         maxlength: 50
