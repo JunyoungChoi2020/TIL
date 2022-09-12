@@ -9,7 +9,7 @@ db = client.dbsparta
 def home():
    return render_template('index.html')
 
-@app.route("/homework", methods=["POST"])
+@app.route("/upload", methods=["POST"])
 def homework_post():
     name_receive = request.form['name_give']
     comment_receive = request.form['comment_give']
@@ -22,10 +22,10 @@ def homework_post():
     db.homework.insert_one(doc)
     return jsonify({'msg':'저장 완료'})
 
-@app.route("/homework", methods=["GET"])
+@app.route("/getdb", methods=["GET"])
 def homework_get():
     order_list = list(db.homework.find({}, {'_id': False}))
-    return jsonify({'orders': order_list})
+    return jsonify({'movies': order_list})
 
 if __name__ == '__main__':
    app.run('0.0.0.0', port=5000, debug=True)
