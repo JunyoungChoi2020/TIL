@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+
+    <!-- 부트스트랩 코드 시작 https://getbootstrap.com/docs/5.0/components/buttons/-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <!-- 부트스트랩 코드 종료-->
+
+    <!-- 제이커리 기본 코드 시작-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- 제이커리 기본 코드 종료-->
+
+
+    <title>Youtube Collection Main page</title>
+
+
+    <!--CSS 시작-->
+    <style>
+
+        .mainslot {
+            background-color: white;
+            max-width: 2000px;
+            width: 95%;
+            margin: 2px auto auto auto;
+
+            box-shadow: 0px 0px 3px 0px gray;
+            padding: 10px;
+            font-size: 20px;
+        }
+
+
+        .user {
+            background-color: black;
+            width: 100%;
+            color: white;
+            text-align: left;
+            font-size: 20px;
+        }
+
+        .title {
+            background-color: black;
+            width: 100%;
+            height: 300px;
+
+            color: white;
+            text-align: center;
+            padding-top: 5%;
+            padding-bottom: 7.5%;
+            font-size: 50px;
+        }
+
+        .upbtn {
+            background-color: aqua;
+            position: absolute;
+            right: 12%;
+
+        }
+
+        body {
+            background-color: black;
+        }
+
+    </style>
+    <!--CSS 종료-->
+
+    <script>
+        function signup() {
+            location.href = "/login"
+        }
+
+    </script>
+    <!--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인-->
+    <!--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인-->
+    <!--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인-->
+
+    <style>
+        * {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+        .mytitle {
+            width: 100%;
+            height: 250px;
+
+            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://movie-phinf.pstatic.net/20210715_95/1626338192428gTnJl_JPEG/movie_image.jpg');
+            background-position: center;
+            background-size: cover;
+
+            color: white;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mytitle > button {
+            width: 200px;
+            height: 50px;
+
+            background-color: transparent;
+            color: white;
+
+            border-radius: 50px;
+            border: 1px solid white;
+
+            margin-top: 10px;
+        }
+
+        .mytitle > button:hover {
+            border: 2px solid white;
+        }
+
+        .mycards {
+            margin: 20px auto 0px auto;
+            width: 95%;
+            max-width: 1200px;
+        }
+
+        .mypost {
+            width: 95%;
+            max-width: 500px;
+            margin: 20px auto 0px auto;
+            padding: 20px;
+            box-shadow: 0px 0px 3px 0px gray;
+
+            display: none;
+        }
+
+        .mybtns {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 20px;
+        }
+
+        .mybtns > button {
+            margin-right: 10px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            listing();
+        });
+
+        function listing() {
+            $.ajax({
+                type: 'GET',
+                url: '/movie',
+                data: {},
+                success: function (response) {
+                    let rows = response['register']
+                    for (let i = rows.length - 1; i >= 0; i--) {
+                        let url = rows[i]['url']
+                        let title = rows[i]['title']
+                        let thumbnail = rows[i]['thumbnail']
+                        let list_time = <rows i=""></rows>
+
+
+                        let temp_html = `<div class="col">
+                                            <div class="card h-100">
+                                                <img src="${thumbnail}"
+                                                     class="card-img-top">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${title}</h5>
+                                                    <p class="card-text">${url} <button class="btn btn-outline-dark" onclick="window.open('${url}')">이동하기</button></p>
+                                                    <p class="card-text">${list_time}</p>
+                                                </div>
+                                            <p><br><button onclick="correction_box()" type="button" class="btn btn-success">수정하기</button>
+                                            <button onclick="delete_box()" type="button" class="btn btn-danger">삭제하기</button></p>
+                                            </div>
+                                        </div>`
+                        $('#cards-box').append(temp_html)
+                    }
+                }
+            })
+        }
+
+        function posting() {
+            let url = $('#url').val()
+            let title = $('#title').val()
+            let thumbnail = $('#image').val()
+            let list_time = getCurrentDate()
+            const KR_TIME_DIFF = 9 * 60 * 60 * 1000
+            let conv_list_time = new Date(list_time - KR_TIME_DIFF)
+
+            $.ajax({
+                type: 'POST',
+                url: '/movie',
+                data: {url_give: url, title_give: title, thumbnail_give: thumbnail, list_time_give: conv_list_time},
+                success: function (response) {
+                    alert(response['msg'])
+                    window.location.reload()
+                }
+            });
+        }
+
+        function open_box() {
+            $('#post-box').show()
+        }
+
+        function close_box() {
+            $('#post-box').hide()
+        }
+
+        // 등록시 시간 체크
+        function getCurrentDate() {
+            let date = new Date();
+            let year = date.getFullYear();
+            let month = date.getMonth();
+            let today = date.getDate();
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            let seconds = date.getSeconds();
+            let milliseconds = date.getMilliseconds();
+            return new Date(Date.UTC(year, month, today, hours, minutes, seconds, milliseconds));
+        }
+
+        //  https://progdev.tistory.com/45
+        // 수정하기
+        function correction_box() {
+            $('#correction-box').show()
+
+        }
+
+        // 삭제하기
+        function delete_box() {
+            $('#delete-box').show()
+        }
+
+        function close_correction_box() {
+            $('#correction-box').hide()
+        }
+
+        function close_delete_box() {
+            $('#delete-box').hide()
+        }
+    </script>
+
+    <!--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인-->
+    <!--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인-->
+    <!--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인-->
+
+
+</head>
+<body>
+
+<div></div>
+
+
+<!--상단 메인 슬롯 시작-->
+<div class="mainslot">
+
+    <div class="upbtn">
+        <!--회원가입 버튼 시작-->
+        <button onclick="signup()" class="btn btn-outline-primary btn-sm" type="submit">로그인/회원가입</button>
+        <!--회원가입 버튼 종료-->
+
+
+    </div>
+    <!--사용자정보 시작-->
+    <div class="user">사용자 정보 없음</div>
+    <!--사용자정보 종료-->
+    <!--타이틀 시작-->
+    <h1 class="title">Youtube<br/>Collection</h1>
+    <!--타이틀 종료-->
+    <div class="user">최초개시일자 2022년 9월 7일 오후3시경, 최종업데이트일자 2022년 9월 8일 오전 1시경</div>
+
+
+</div>
+<!--상단 메인 슬롯 종료-->
+
+<!--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인-->
+<!--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인-->
+<!--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인--김수완씨 작업물--시작라인-->
+<div class="mytitle">
+    <h1>기능 테스트</h1>
+    <button onclick="open_box()">Register</button>
+</div>
+<div class="mypost" id="post-box">
+    <div class="form-floating mb-3">
+        <textarea id="title" class="form-control" placeholder="listing title"></textarea>
+        <label for="floatingTextarea2">제목(Title)</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input id="url" class="form-control" placeholder="url">
+        <label>영상URL</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input id="image" class="form-control" placeholder="thumbimage">
+        <label>썸네일 이미지</label>
+    </div>
+    <div class="mybtns">
+        <button onclick="posting()" type="button" class="btn btn-dark">등록하기</button>
+        <button onclick="close_box()" type="button" class="btn btn-outline-dark">닫기</button>
+    </div>
+</div>
+<div class="mypost" id="correction-box">
+    <div class="form-floating mb-3">
+        <textarea id="cor_title" class="form-control" placeholder="correction title"></textarea>
+        <label for="floatingTextarea2">제목 수정(Title)</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input id="cor_url" class="form-control" placeholder="url">
+        <label>영상 수정 URL</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input id="cor_image" class="form-control" placeholder="thumbimage">
+        <label>썸네일 수정 이미지</label>
+    </div>
+    <button onclick="re_posting()" type="button" class="btn btn-dark">수정하기</button>
+    <button onclick="close_correction_box()" type="button" class="btn btn-outline-dark">닫기</button>
+</div>
+</div>
+<div class="mypost" id="delete-box">
+    <div class="mybtns">
+        <p>정말 삭제하시겠습니까?</p>
+        <button onclick="deleting()" type="button" class="btn btn-dark">삭제하기</button>
+        <button onclick="close_delete_box()" type="button" class="btn btn-outline-dark">닫기</button>
+    </div>
+</div>
+<div class="mycards">
+    <div class="row row-cols-1 row-cols-md-4 g-4" id="cards-box">
+    </div>
+</div>
+<!--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인-->
+<!--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인-->
+<!--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인--김수완씨 작업물--종료라인-->
+
+<!--개발용 목록으로 완성되면 삭제-->
+<div class="mainslot">
+    <div class="user"> 본 버전은 3번째 버전입니다. 기능을 테스트해주세요</br>패치노트</br></div>
+    <div>이제부터 회원가입할때 모든항목을 입력해야 회원가입이 가능합니다.</div>
+    <div>회원가입시 질문사항과 질문답변에 마우스를 올리면 이게 왜 필요한지 툴팁이 나옵니다.</div>
+    <div>회원가입시 중복체크 기능이 활성화되었습니다. 그러나 테스트 결과 다소 불안한 모습을 보이는데 원인을 찾고 있습니다.</div>
+    <div>회원가입시 가입버튼이 기본적으로 비활성화 되어 있습니다. 중복체크를 했을 때 중복이 아니어야 활성화 됍니다.</div>
+    <div>회원가입시 중복체크결과가 비중복이어도 입력을 바꾸면 버튼이 비활성화 됍니다.(정확히는 입력을 바꾸고 주변을 클릭하면 비활성화)</div>
+    <div>9월 8일 오전 기준 김수완씨의 작업물을 하나로 통합하였습니다. 현재 호환성 테스트를 시행하고 있습니다.</div>
+</div>
+
+<div class="mainslot">
+    <div class="user">참고사항</div>
+    <div>로그인 여부와 상관없이 사용자 정보가 없습니다라고 뜰 것입니다.(이부분은 아직 미구현입니다)</div>
+    <div>비밀번호 암호화 기능은 아직 구현하지 못했습니다.</div>
+    <div>회원가입 화면에서 Youtube Collection 을 누르면 메인화면으로 돌아옵니다.</div>
+    <div>[!] 업데이트 할 때마다 DB를 초기화 합니다. 이전 회원가입 데이터가 없을 수도 있습니다.[!]</div>
+     <div>9월 8일 오전 기준 김수완씨의 작업물을 하나로 통합하였습니다. 현재 호환성 테스트를 시행하고 있습니다.</div>
+</div>
+
+<div class="mainslot">
+    <div class="user">지금까지 받은 피드백</div>
+    <div>닉네임 글자 수에 제한이 없다</div>
+    <div>회원가입창의 기능을 이해하지 못하는 경우가 있으니 수정 또는 안내문 추가가 필요해 보임</div>
+    <div>로그인 화면에서 잘못된 아이디+패스워드에 따른 피드백 기능을 개선해야함</div>
+    <div>XSS공격에 취약함</div>
+    <div>패스워드 암호화저장이 필요함</div>
+</div>
+
+
+<!--개발용 목록으로 완성되면 삭제-->
+
+
+<!--영상목록 시작-->
+<!--영상목록 종료-->
+
+</body>
+</html>
