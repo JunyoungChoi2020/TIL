@@ -125,13 +125,14 @@ def movie_post():
     thumbnail_receive = request.form['thumbnail_give']
     list_time_receive = request.form['list_time_give']
     category = request.form['category_give']
+    token = ""
 
     doc = {
         'title':title_receive,
         'url':url_receive,
         'thumbnail':thumbnail_receive,
         'list_time':list_time_receive,
-        'category' : category
+        'category' : category,
     }
     db.register.insert_one(doc)
     return jsonify({'msg': '등록 완료'})
@@ -140,7 +141,7 @@ def movie_post():
 @app.route("/movie", methods=["GET"])
 def movie_get():
     take_list = list(db.register.find({}, {'_id': False}))
-    return jsonify({'register': take_list})
+    return jsonify(take_list)
 
 
 

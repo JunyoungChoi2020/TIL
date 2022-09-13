@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <title>UTube Collection</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        html, body{
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        * {
+            font-family: 'Noto Serif KR', serif;
+        }
+
+        .title {
+            width: 100%;
+            height: 350px;
+
+            background-image: url('https://is2-ssl.mzstatic.com/image/thumb/Purple112/v4/19/ea/6d/19ea6df1-27eb-1a7b-adb9-4010aa42e405/YouTubeKidsAppIcon-0-0-1x_U007emarketing-0-0-0-6-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/1200x630wa.png');
+            background-position: center 50% ;
+            background-size: cover;
+
+            color: black;
+
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .title > .left {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+
+        .title > .right {
+            display: flex;
+            flex-direction: row;
+            align-self: flex-end;
+        }
+
+        .title > .right > .rightUp {
+            margin-right: 6px;
+        }
+
+        .mainPage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 20px;
+        }
+
+        .mainPage > .mainFoot {
+            display: flex;
+            flex-direction: row;
+            align-self: flex-end;
+
+            margin-top: 20px;
+        }
+
+        button {
+          color: black;
+          border-radius: 4px;
+          cursor: pointer;
+          width: 70px; height:30px;
+        }
+
+        .modal {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+        }
+
+        .modal .background {
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        #box {
+            width: 100%;
+            height: 20%;
+            margin-bottom: 10px;
+        }
+
+        #uploadBtn {
+            margin-left : auto;
+        }
+
+        .popup {
+            z-index: 1;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            min-width: 300px;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 2px 55px -25px rgb(0 0 0 / 100%);
+        }
+        .popup > .popuptitle{
+            border-radius: 15px 15px 0 0;
+            min-height: 40px;
+            color: #fff;
+            background-color: #b66;
+            padding: 10px 15px;
+            box-sizing: border-box;
+            font-weight: bold;
+        }
+        .popup > .content {
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+    </style>
+    <script>
+        // 첫 화면 display
+        $(document).ready(function(){
+            //로그인 했을 때 닉네임을 Title 아래에 보여줌
+            showNicknameAtTitle()
+            // 로그인, 업로드 버튼 구현.
+            showButtons()
+            // 업로드 버튼을 누르면 인라인 팝업 페이지가 뜨도록 함. form으로 /upload 페이지로 데이터를 쏴줌
+            uploadPopUpPage() // hidden
+            // 상동. 업데이트 인라인 팝업 페이지 구현
+            updatePopUpPage() // hidden
+            // 영상 리스트를 보여 줌
+            showMovieCards()
+        });
+
+        function goToLoginPage(){
+            location.href ="/login"
+        }
+
+        function goToHomePage(){
+            location.href ="/"
+        }
+
+        //로그인 했을 때 닉네임을 Title 아래에 보여줌. url 및 변수 이름 수정 필요
+        function showNicknameAtTitle(){
+            return $.ajax({
+                type: "GET",
+                url: "/getdb",
+                data: {},
+                success: function(response) {
+                    let nickname = response['nickname'];
+                    if(nickname){
+                        let returnValue = `<span>Welcome, ${nickname}</span>`;
+                        $('.nicknameAtTitle').append(returnValue);
+                    }
+                }
+            })
+        }
+
+        // 로그인, 업로드 버튼 구현. url 및 변수 이름 수정 필요
+        function showButtons(){
+            return $.ajax({
+                type: "GET",
+                url: "/getdb",
+                data: {},
+                success: function(response) {
+                    // JWT 방식 로그인을 가정했을 때, loginCondition !== null 이면 버튼에 LogOut이 표시됨. null(logOut상태)이면 Login이 표시됨.
+                    let loginCondition = response['token'];
+
+                    let buttonValue;
+                    if (loginCondition) {
+                        buttonValue = '로그아웃'
+                    } else {
+                        buttonValue = '로그인'
+                    }
+
+                    //버튼 누르면로그인 화면으로 이동
+                    let loginButton = `<button type="button" onclick ="goToLoginPage()" value=${buttonValue}>${buttonValue}</button> `
+                    $('.rightUp').append(loginButton);
+
+                    //로그인 상태라면 업로드 버튼도 보여줌
+                    if(buttonValue === '로그인'){
+                        let uploadButton = `<button type="button" value="upload" class="openBtn" onclick="showPopUpPage()">업로드</button>`
+                        $('.rightDown').append(uploadButton);
+                        // 로그인 상태라면 서치바를 보여줌
+                        showSearchBar();
+                    }
+                }
+            })
+        }
+
+        // 영상 uri를 기준으로 중복 영상이 존재하면 DB에 저장을 중지함
+        function checkDuplication(){
+            return $.ajax({
+                type: "GET",
+                url: "/getdb",
+                data: {},
+                success: function(response) {
+                    const uri = response['uri'];
+                    for(let i = 0; i<uri.length; i++){
+                        if(uri[i] === $(".movieLink")){
+                            alert("이미 등록되어 있습니다.");
+                            return false;
+                        }
+                    }
+                }
+            })
+        }
+
+        // 업로드 버튼을 누르면 인라인 팝업 페이지가 뜨도록 함. form으로 /upload 페이지로 데이터를 쏴줌
+        function uploadPopUpPage(){
+            let date = new Date();
+            let getTimeNow = ("Date: "+date.getDate()+
+                              "/"+(date.getMonth()+1)+
+                              "/"+date.getFullYear()+
+                              " "+date.getHours()+
+                              ":"+date.getMinutes()+
+                              ":"+date.getSeconds());
+
+            // 수정 필요
+            let uploadPageUri = './upload';
+
+            let uploadPage = `<div class="popup">
+                                <div class="popuptitle">업로드 페이지</div>
+                                <div class="content">
+                                    <form name="uploadForm" class="uploadForm" action=${uploadPageUri} onsubmit="return checkDuplication()">
+                                        <input id="box" type="text" class="movieName" placeholder="영상 제목">
+                                        <input id="box" type="text" class="movieUploadTime" value=${getTimeNow} readonly>
+                                        <input id="box" type="text" class="movieLink" placeholder="영상 링크">
+                                        <input id="box" type="text" class="movieThumbnailImage" placeholder="썸네일 이미지(option)">
+                                        <input id="box" type="text" class="movieCategory" placeholder="태그">
+                                        <p></p>
+                                        <input type="submit" value="저장" id="uploadBtn" class="button">
+                                        <input type="button" value="취소" id="uploadBtn" class="closeBtn" onclick="closePopUpPage()">
+                                    </form>
+                                </div>
+                              </div>`;
+
+            $(".modalBox").append(uploadPage);
+        }
+
+        // 상동. 업데이트 인라인 팝업 페이지 구현
+        function updatePopUpPage(){
+            return $.ajax({
+                type: "GET",
+                url: "/getdb",
+                data: {},
+                success: function(response) {
+                    let modPageUri = './update';
+                    let movieName = response['name'];
+                    let movieUploadTime = response['uploadTime'];
+                    let movieLink = response['link'];
+                    let tnImage = response['thumbnailImage'];
+                    let category = response['category'];
+
+                    let updatePage = `<div class="popup">
+                                <div class="popuptitle">수정 페이지</div>
+                                <div class="content">
+                                    <form name="updateForm" class="updateForm" action=${modPageUri} onsubmit="return checkDuplication()">
+                                        <input id="box" type="text" class="movieName" placeholder=${movieName}>
+                                        <input id="box" type="text" class="movieUploadTime" value=${movieUploadTime} readonly>
+                                        <input id="box" type="text" class="movieLink" placeholder=${movieLink}>
+                                        <input id="box" type="text" class="movieThumbnailImage" placeholder=${tnImage}>
+                                        <input id="box" type="text" class="movieCategory" placeholder=${category}
+                                        <input type="submit" value="수정" class="button">
+                                        <input type="button" value="취소" class="closeUpdateBtn" onclick="closeUpdatePopUpPage()">
+                                    </form>
+                                </div>
+                              </div>`;
+
+                    $(".updateModalBox").append(updatePage);
+                }
+            })
+        }
+
+        // 업로드한 시간으로부터 현재 시간까지의 시간을 일, 시, 분, 초로 보여줌.
+        function secToTime(sec){
+            let copy_sec = sec;
+            let lastUpdated;
+
+            let day = Math.floor(copy_sec / (60 * 60 * 24));
+            copy_sec = copy_sec - day * (60 * 60 * 24);
+
+            let hour = Math.floor(copy_sec / (60 * 60));
+            copy_sec = copy_sec - hour & (60 * 60);
+
+            let min = Math.floor(copy_sec / 60);
+            copy_sec = copy_sec - min * 60;
+
+            let second = copy_sec;
+
+            if(day !== 0){
+                lastUpdated = day + '일 ' + hour + '시 ' + min + '분 ' + second + '초';
+            } else if(hour !== 0){
+                lastUpdated = hour + '시 ' + min + '분 ' + second + '초';
+            } else if(min !== 0){
+                lastUpdated = min + '분 ' + second + '초';
+            } else {
+                lastUpdated = second + '초'
+            }
+
+            return lastUpdated
+        }
+
+        function deleteMovie(requestUri){
+            // 구현 필요
+        }
+        function updateMovie(request){
+            // 구현 필요
+        }
+
+        // 영상 리스트를 보여 줌
+        function showMovieCards(){
+            $.ajax({
+                type: "GET",
+                url: "/movie",
+                data: {},
+                success: function(response) {
+                    let login = response['token'];
+
+                    if(login){
+                        //변수 이름 수정 필요. 영상 데이터 저장 방식에 따라 추가 수정 필요(id로 구분? or 순서대로 구분? 등. 현재 순서대로 구분)
+                        let movieLink = response['link'];
+                        let tnImage = response['thumbnailImage'];
+                        let category = response['category'];
+                        let movieName = response['name'];
+                        let thumbnailLink = response['thumbnailLink'];
+
+                        let uriList = response['uri'];
+
+                        let movieUploadTime = response['uploadTime'];
+                        let date = new Date();
+                        let lastUpdatedBySec = Math.round((movieUploadTime - date) / 1000);
+                        let lastUpdated = secToTime(lastUpdatedBySec);
+                        let movieCards = `<div class="row row-cols-1 row-cols-md-3 g-4">`
+
+                        for(let i = 0; i < movieName.length; i++){
+                            let addCard = (`<div class="col">
+                                                <div class="card h-100">
+                                                  <img src=${thumbnailLink[i]} class="card-img-top" alt="...">
+                                                  <div class="card-body">
+                                                    <h5 class="card-title">${movieName[i]}</h5>
+                                                    <input type="button" class="updateBtnOnCard" onclick="showUpdatePopUpPage()">
+                                                    <input type="button" class="deleteBtnOnCard" onclick="deleteMovie(${uriList[i]})">
+                                                  </div>
+                                                  <div class="card-footer">
+                                                    <small class="text-muted">${lastUpdated} 전에 업데이트 됨.</small>
+                                                  </div>
+                                                </div>
+                                            </div>`);
+
+                            movieCards.concat(addCard);
+                        }
+                        movieCards.concat(`</div>`);
+                        $('.mainBody').append(movieCards);
+                    } else {
+                        let welcome = `<p>UTube Collection에 오신 것을 환영합니다.</p><p>로그인 하신 뒤 원하는 영상을 자유롭게 추가해보세요.</p>`
+                        $('.mainBody').append(welcome);
+                    }
+                }
+            })
+        }
+
+        // 로그인 상태라면 서치바를 보여 줌. 검색 페이지로 이동.
+        function showSearchBar(){
+            let goToSearchingPage = './search'
+            let searchBar = `<form action=${goToSearchingPage}>
+                                <input type="text" class="search" placeholder="search in here">
+                                <input type="submit" value="검색" class="searchBtn">
+                            </form>`
+
+            $(".mainFoot").append(searchBar);
+        }
+
+
+        // 업로드를 위한 인라인 팝업 페이지를 보여 줌.
+        function showPopUpPage(){
+            document.getElementById("popUpPage").style.display = "block";
+        }
+
+        // 업로드를 위한 인라인 팝업 페이지를 끔.
+        function closePopUpPage(){
+            document.getElementById("popUpPage").style.display = "none";
+        }
+
+        // 업데이트를 위한 인라인 팝업 페이지를 보여 줌.
+        function showUpdatePopUpPage(){
+            document.getElementById("updatePopUpPage").style.display = "block";
+        }
+
+        // 업데이트를 위한 인라인 팝업 페이지를 끔.
+        function closeUpdatePopUpPage(){
+            document.getElementById("updatePopUpPage").style.display = "none";
+        }
+
+    </script>
+</head>
+
+<body class="dimmed">
+    <div class="title">
+        <div class = "left">
+            <h1>UTube Collection</h1>
+            <p class ="nicknameAtTitle"></p>
+        </div>
+
+        <div class = "right">
+            <div class = "rightUp"></div>
+            <div class = "rightDown"></div>
+        </div>
+    </div>
+
+    <div class="mainPage">
+        <div class="mainHead"></div>
+        <div class="mainBody"></div>
+        <div class="mainFoot"></div>
+    </div>
+
+    <div id="popUpPage" style="display: none">
+        <div class="modal">
+            <div class="background"></div>
+            <div class="modalBox"></div>
+        </div>
+    </div>
+
+    <div id="updatePopUpPage" style="display: none">
+        <div class="updateModal">
+            <div class="updateBackground"></div>
+            <div class="updateModalBox"></div>
+        </div>
+    </div>
+
+</body>
+</html>
