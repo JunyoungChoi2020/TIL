@@ -33,6 +33,13 @@ def bucket_done():
 
     return jsonify({'msg': '업로드 완료!'})
 
+@app.route("/bucket/goBack", methods=["POST"])
+def bucket_goBack():
+    num_receive = request.form['num_give']
+    db.bucket.update_one({'num': int(num_receive)}, {'$set': {'done': 0}})
+
+    return jsonify({'msg': '업로드 완료!'})
+
 @app.route("/bucket", methods=["GET"])
 def bucket_get():
     bucket_list = list(db.bucket.find({}, {'_id': False}))

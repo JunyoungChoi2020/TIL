@@ -94,6 +94,7 @@
                         if(done != 0){
                             let temp_html = `<li>
                                                 <h2 class="done">✅ ${bucket}</h2>
+                                                <button onclick="goBack_bucket(${num})" type="button" class="btn btn-outline-primary">취소!</button>
                                             </li>`
                             $('#bucket-list').append(temp_html)
 
@@ -126,6 +127,17 @@
             $.ajax({
                 type: "POST",
                 url: "/bucket/done",
+                data: {num_give: num},
+                success: function (response) {
+                    window.location.reload()
+                }
+            });
+        }
+
+        function goBack_bucket(num){
+            $.ajax({
+                type: "POST",
+                url: "/bucket/goBack",
                 data: {num_give: num},
                 success: function (response) {
                     window.location.reload()
