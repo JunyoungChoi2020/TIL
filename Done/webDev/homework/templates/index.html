@@ -154,6 +154,10 @@
             location.href ="/login"
         }
 
+        function logout(){
+
+        }
+
         function goToHomePage(){
             location.href ="/"
         }
@@ -162,7 +166,7 @@
         function showNicknameAtTitle(){
             return $.ajax({
                 type: "GET",
-                url: "/getdb",
+                url: `/userinfo/${id}`,
                 data: {},
                 success: function(response) {
                     let nickname = response['nickname'];
@@ -175,32 +179,39 @@
         }
 
         // 로그인, 업로드 버튼 구현. url 및 변수 이름 수정 필요
-        function showButtons(){
+        function showButtons() {
             return $.ajax({
                 type: "GET",
-                url: "/getdb",
+                url: "/cookie_data",
                 data: {},
-                success: function(response) {
-                    // JWT 방식 로그인을 가정했을 때, loginCondition !== null 이면 버튼에 LogOut이 표시됨. null(logOut상태)이면 Login이 표시됨.
-                    let loginCondition = response['token'];
+                success: function (response) {
+                    // 쿠키에 유의미한 토큰 값을 보유하고 있는 경우
+                    if (response !== '' || response !== undefined || response !== null) {
+                        let loginCondition = response['token'];
 
-                    let buttonValue;
-                    if (loginCondition) {
-                        buttonValue = '로그아웃'
+                        let buttonValue;
+                        if (loginCondition) {
+                            buttonValue = '로그아웃'
+                        } else {
+                            buttonValue = '로그인'
+                        }
+
+                        //로그아웃 버튼을 보여 줌
+                        let loginButton = `<button type="button" onclick ="logout()">로그아웃</button> `;
+                        $('.rightUp').append(loginButton);
+
+                        //로그인 상태라면 업로드 버튼도 보여줌
+                        if (buttonValue === '로그인') {
+                            let uploadButton = `<button type="button" value="upload" class="openBtn" onclick="showPopUpPage()">업로드</button>`
+                            $('.rightDown').append(uploadButton);
+                            // 로그인 상태라면 서치바를 보여줌
+                            showSearchBar();
+                        }
                     } else {
-                        buttonValue = '로그인'
-                    }
+                        //버튼 누르면 로그인 화면으로 이동
+                        let loginButton = `<button type="button" onclick ="goToLoginPage()">로그인</button> `
+                        $('.rightUp').append(loginButton);
 
-                    //버튼 누르면로그인 화면으로 이동
-                    let loginButton = `<button type="button" onclick ="goToLoginPage()" value=${buttonValue}>${buttonValue}</button> `
-                    $('.rightUp').append(loginButton);
-
-                    //로그인 상태라면 업로드 버튼도 보여줌
-                    if(buttonValue === '로그인'){
-                        let uploadButton = `<button type="button" value="upload" class="openBtn" onclick="showPopUpPage()">업로드</button>`
-                        $('.rightDown').append(uploadButton);
-                        // 로그인 상태라면 서치바를 보여줌
-                        showSearchBar();
                     }
                 }
             })
