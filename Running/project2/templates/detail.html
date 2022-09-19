@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Sparta Vocabulary Notebook</title>
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
+        
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+
+        <link href='{{ url_for("static", filename="mystyle.css") }}' rel="stylesheet">
+    </head>
+    <script>
+        function save_word() {
+            $.ajax({
+                type:"POST",
+                url: `/api/save_word`,
+                data: {
+                    word_give: "{{ word }}",
+                    definition_give: "{{ result['definitions'][0]['definition'] }}"
+                },
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.href = "/detail/{{ word }}?status_give=old"
+                }
+            });
+        }
+
+        function delete_word() {
+            $.ajax({
+                type: "POST",
+                url: '/api/delete_word',
+                data: {
+                    word_give: '{{ word }}'
+                },
+                success: function(res) {
+                    alert(res["msg"])
+                    window.location.href = "/"
+                }
+            })
+        }
+
+        function add_example() {
+            return $.ajax({
+                type: "POST",
+                url: "/api/add_example",
+                data: {
+                    example_give : $('#word_exam').val(),
+                    word_give : {{ word }}
+                },
+                success: function(res){
+                    if(res === false){
+                        alert(`the word {{ word }} is not included`)
+                        return
+                    }
+
+                    let val = `<ul>`
+                    for(let i=0; i<res.length; i++){
+                        let temp_id = `exam_${i}`;
+                        let temp = `<li id="exam_${i}"> res[i] <button onclick="delete_exam("exam_${i}")" style="color: antiquewhite">delete</button> </li>`
+                        val = val.concat(temp)
+                    }
+
+                    $('#dot_examples').append(val)
+                }
+            })
+        }
+
+        function delete_exam(id) {
+
+        }
+    </script>
+
+    <body>
+    <div class="wrap">
+            <div class="banner" onclick="window.location.href = '/'"></div>
+
+    <div class="container">
+            <div class="d-flex justify-content-between align-items-end">
+                <div>
+                    <h1 id="word" style="display: inline;">{{ word }}</h1>
+                    {% if result['pronunciation'] %}
+                        <h5 id="pronunciation" style="display: inline;">{{ result['pronunciation'] }}</h5>
+                    {% endif %}
+                </div>
+                {% if status == "new" %}
+                    <button id="btn-save" class="btn btn-outline-sparta btn-lg" onclick="save_word()">save</button>
+                {% else %}
+                    <button id="btn-delete" class="btn btn-sparta btn-lg" onclick="delete_word()">delete</button>
+                {% endif %}
+            </div>
+            <hr>
+            <div id="definitions">
+                {% for definition in result['definitions'] %}
+                <div style="padding:10px">
+                    <i>{{ definition['type'] }}</i>
+                    <br>{{ definition['definition'].encode('ascii', 'ignore').decode('utf-8') }}<br>
+                    {% if definition['example'] %}
+                        <span class="example">{{ definition['example'].encode('ascii', 'ignore').decode('utf-8') }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if status != "new" %}
+                <div id="examples">
+                    <div id="examples">
+                        <h2>Write your own sentence!</h2>
+                        <div id="dot_examples"></div>
+                        <div class="input-group mb-3">
+                          <input type="text" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2" id="word_exam">
+                          <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="add_example()">추가</button>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    </body>
+</html>
