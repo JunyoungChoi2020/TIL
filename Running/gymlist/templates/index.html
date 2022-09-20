@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Sparta Vocabulary Notebook</title>
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+
+        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=27c10499d4831e0af6d869ca74a52920&libraries=services"></script>
+
+        <script>
+            $(() => {
+               dragOnGymsInfo('구리시 헬스장')
+            })
+
+            function dragOnGymsInfo(keyword) {
+                var ps = new kakao.maps.services.Places();
+                ps.keywordSearch(keyword, placesSearchCB);
+
+            }
+
+            function placesSearchCB(data, status, pagination) {
+                let gymsInfoList = [];
+
+                if (status === kakao.maps.services.Status.OK) {
+                    for(let i=0; i<data.length; i++){
+                        let temp_doc = {
+                            "place_name": data[i]["place_name"],
+                            "address": data[i]["address_name"],
+                            "id": data[i]["id"],
+                            "phone": data[i]["phone"],
+                            "place_url": data[i]["place_url"],
+                            "road_address": data[i]["road_address"],
+                            "x": data[i]["x"],
+                            "y": data[i]["y"],
+                            "image_url": "https://mediahub.seoul.go.kr/uploads/mediahub/2021/01/d617bd125f644bae918def98044087aa.jpg"
+                        }
+                        gymsInfoList.push(temp_doc);
+                    }
+                }
+                appendGymList(gymsInfoList);
+            }
+
+            function appendGymList(gymsInfoList){
+                let gymListWithHtml = ``;
+                let innerWidth = window.innerWidth;
+                let innerHeight = window.innerHeight;
+
+                let image_width = (innerWidth * 0.21).toString() + 'px';
+                let image_height = (innerHeight * 0.21).toString() + 'px';
+                let margin_width = (innerWidth * 0.04).toString() + 'px';
+
+                gymsInfoList.map((gymInfo) => {
+                    const temp_boots = `<div class="spaceBetweenImages" style="margin-right: ${margin_width}">
+                                            <img class="imageSize" src="${gymInfo["image_url"]}" onclick="window.location.href='/api/posts/comment/'" style="width:${image_width}; height:${image_height};">
+                                            <div style="display: flex; flex-direction: column";>
+                                              <h5>${gymInfo["place_name"]}</h5>
+                                              <small onclick="save_gym(${gymInfo})"">찜하기</small>
+                                            </div>
+                                         </div>`
+                    gymListWithHtml = gymListWithHtml + temp_boots;
+                })
+
+                $(".container").append(gymListWithHtml)
+            }
+
+            function save_gym(data){
+                const doc = JSON.stringify(data)
+                return $.ajax({
+                type: "POST",
+                url: `/api/posts`,
+                data: { doc },
+                success: function(response) {
+
+                }})
+            }
+        </script>
+
+        <style>
+            .container_wrap{
+                width: 50%;
+            }
+
+            .container{
+                display: flex;
+                align-items: flex-start;
+                justify-content: flex-start;
+                flex-direction: row;
+
+                transform: translate3d(0, 0, 0);
+                transition: transform 0.2s;
+            }
+
+            .head{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+
+                margin-top: 30px;
+                margin-bottom: 30px;
+            }
+
+            .buttonContainer {
+                display: flex;
+                align-self: end;
+                justify-content: end;
+                flex-direction: row;
+                margin-right: 10%;
+            }
+            .buttonContainer button{
+                width: 30px;
+                height: 30px;
+                margin-right: 8px;
+                background-color: transparent;
+            }
+
+            .buttonContainer button:hover{
+                background-color: lightblue;
+            }
+        </style>
+    </head>
+    <body style="overflow-x: hidden">
+        <div class="window">
+            <div class="head">
+                <h2>근처의 gym 보여주기</h2>
+                <div class="buttonContainer">
+                    <button class="prev">◁</button>
+                    <button class="next">▷</button>
+                </div>
+            </div>
+            <div class="container_wrap">
+                <div class="container"></div>
+            </div>
+        </div>
+        <script>
+            const prevButton = document.querySelector('.prev');
+            const nextButton = document.querySelector('.next');
+            const container = document.querySelector('.container');
+
+            let index = 0;
+
+            prevButton.addEventListener('click', () => {
+               if (index === 0) return;
+               index -= 1;
+
+               container.style.transform = `translate3d(-${window.innerWidth * 0.25 * index}px, 0, 0)`;
+            });
+
+            nextButton.addEventListener('click', () => {
+               if (index === 11) return;
+               index += 1;
+
+               container.style.transform = `translate3d(-${window.innerWidth * 0.25 * index}px, 0, 0)`;
+            });
+        </script>
+<!--            function resizeImages(){-->
+<!--                let innerWidth = window.innerWidth;-->
+<!--                let innerHeight = window.innerHeight;-->
+
+<!--                let image_width = (innerWidth * 0.21).toString() + 'px';-->
+<!--                let image_height = (innerHeight * 0.21).toString() + 'px';-->
+<!--                let margin_width = (innerWidth * 0.265).toString() + 'px';-->
+
+<!--                $(".spaceBetweenImages").style.marginRight = margin_width;-->
+<!--                $(".imageSize").style.width = image_width;-->
+<!--                $(".imageSize").style.height = image_height;-->
+
+<!--                console.log("done!")-->
+<!--            };-->
+
+<!--            window.onload = resizeImages();-->
+<!--            window.onresize = resizeImages();-->
+    </body>
+</html>

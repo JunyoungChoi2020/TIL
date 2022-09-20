@@ -16,6 +16,9 @@ def main():
     msg = request.args.get("msg")
     return render_template("index.html", words=words, msg=msg)
 
+@app.route('/test')
+def test():
+    return render_template("test.html")
 
 @app.route('/detail/<keyword>')
 def detail(keyword):

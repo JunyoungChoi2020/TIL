@@ -68,7 +68,6 @@
 
                     let val = `<ul>`
                     for(let i=0; i<res.length; i++){
-                        let temp_id = `exam_${i}`;
                         let temp = `<li id="exam_${i}"> res[i] <button onclick="delete_exam("exam_${i}")" style="color: antiquewhite">delete</button> </li>`
                         val = val.concat(temp)
                     }
