@@ -23,8 +23,33 @@
         <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=27c10499d4831e0af6d869ca74a52920&libraries=services"></script>
 
         <script>
+            function change_location(){
+                let addr = $('.myaddress').val()
+                return $.ajax({
+                    type: "POST",
+                    url: `/api/user/location`,
+                    data: {"myAddress": addr},
+                    success: function (response) {
+                        alert('주소가 변경되었습니다.')
+                        window.location.reload()
+                    }
+                })
+            }
+            function get_location(){
+                return $.ajax({
+                    type: "GET",
+                    url: `/api/user/location`,
+                    data: {},
+                    success: function (response) {
+                        let val = response['address'];
+                        dragOnGymsInfo(val + '헬스장')
+                    }
+                })
+            }
+
             $(() => {
-               dragOnGymsInfo('구리시 헬스장')
+               get_location()
+               show_dajim()
             })
 
             function dragOnGymsInfo(keyword) {
@@ -47,7 +72,7 @@
                             "road_address": data[i]["road_address"],
                             "x": data[i]["x"],
                             "y": data[i]["y"],
-                            "image_url": "https://mediahub.seoul.go.kr/uploads/mediahub/2021/01/d617bd125f644bae918def98044087aa.jpg"
+                            "image_url": "https://mediahub.seoul.go.kr/uploads/mediahub/2021/01/d617bd125f644bae918def98044087aa.jpg",
                         }
                         gymsInfoList.push(temp_doc);
                     }
@@ -55,7 +80,67 @@
                 appendGymList(gymsInfoList);
             }
 
-            function appendGymList(gymsInfoList){
+            function save_gym(stringData) {
+                let data = stringData.split(',n!e@x#t$,');
+
+                const doc = JSON.stringify({
+                    "place_name": data[0],
+                    "address": data[1],
+                    "id": data[2],
+                    "phone": data[3],
+                    "place_url": data[4],
+                    "road_address": data[5],
+                    "x": data[6],
+                    "y": data[7],
+                    "image_url": data[8],
+                })
+
+                return $.ajax({
+                    type: "POST",
+                    url: `/api/posts/upload`,
+                    data: {doc},
+                    success: function (response) {
+                        if (response['result'] == "success") {
+                            alert(response['msg']);
+                            window.location.reload();
+                        } else {
+                            alert('error: upload')
+                        }
+                    }
+                })
+            }
+
+            function delete_gym(stringData) {
+                let data = stringData.split(',n!e@x#t$,');
+
+                const doc = JSON.stringify({
+                    "place_name": data[0],
+                    "address": data[1],
+                    "id": data[2],
+                    "phone": data[3],
+                    "place_url": data[4],
+                    "road_address": data[5],
+                    "x": data[6],
+                    "y": data[7],
+                    "image_url": data[8],
+                })
+
+                return $.ajax({
+                    type: "POST",
+                    url: `/api/posts/delete`,
+                    data: {doc},
+                    success: function (response) {
+                        if (response['result'] == "success") {
+                            alert(response['msg']);
+                            window.location.reload();
+                        } else {
+                            alert('error: delete')
+                        }
+                    }
+                })
+            }
+
+            function appendGymList(gymsInfoList) {
                 let gymListWithHtml = ``;
                 let innerWidth = window.innerWidth;
                 let innerHeight = window.innerHeight;
@@ -64,33 +149,162 @@
                 let image_height = (innerHeight * 0.21).toString() + 'px';
                 let margin_width = (innerWidth * 0.04).toString() + 'px';
 
-                gymsInfoList.map((gymInfo) => {
-                    const temp_boots = `<div class="spaceBetweenImages" style="margin-right: ${margin_width}">
-                                            <img class="imageSize" src="${gymInfo["image_url"]}" onclick="window.location.href='/api/posts/comment/'" style="width:${image_width}; height:${image_height};">
-                                            <div style="display: flex; flex-direction: column";>
-                                              <h5>${gymInfo["place_name"]}</h5>
-                                              <small onclick="save_gym(${gymInfo})"">찜하기</small>
-                                            </div>
-                                         </div>`
-                    gymListWithHtml = gymListWithHtml + temp_boots;
-                })
-
-                $(".container").append(gymListWithHtml)
-            }
-
-            function save_gym(data){
-                const doc = JSON.stringify(data)
+                let data = JSON.stringify(gymsInfoList);
                 return $.ajax({
-                type: "POST",
-                url: `/api/posts`,
-                data: { doc },
-                success: function(response) {
+                    type: "POST",
+                    url: `/api/posts/post_exist_check`,
+                    data: {
+                        "gymsInfoList": data,
+                    },
+                    success: function (response) {
+                        if (response['result'] == "success") {
+                            let checked = response['checkList'];
+                            let counter = 0
+                            gymsInfoList.map((gymInfo) => {
+                                const gymInfoDocToString = [gymInfo['place_name'], "n!e@x#t$", gymInfo['address'], "n!e@x#t$", gymInfo['id'], "n!e@x#t$", gymInfo['phone'], "n!e@x#t$", gymInfo['place_url'], "n!e@x#t$", gymInfo['road_address'], "n!e@x#t$", gymInfo['x'], "n!e@x#t$", gymInfo['y'], "n!e@x#t$", gymInfo['image_url'], "n!e@x#t$", gymInfo['mypost']]
+                                let temp_boots;
 
-                }})
+                                if (checked[counter] === false) {
+                                    temp_boots = `<div class="spaceBetweenImages" style="margin-right: ${margin_width}">
+                                                    <img class="imageSize" src="${gymInfo["image_url"]}" onclick="gotoDetailPage(${data})" style="width:${image_width}; height:${image_height};">
+                                                    <div style="display: flex; flex-direction: column";>
+                                                      <h5>${gymInfo["place_name"]}</h5>
+                                                      <small onclick="save_gym(\'${gymInfoDocToString}\')">찜하기</small>
+                                                    </div>
+                                                 </div>`
+                                } else {
+                                    temp_boots = `<div class="spaceBetweenImages" style="margin-right: ${margin_width}">
+                                                    <img class="imageSize" src="${gymInfo["image_url"]}" onclick="gotoDetailPage(${data})" style="width:${image_width}; height:${image_height};">
+                                                    <div style="display: flex; flex-direction: column";>
+                                                      <h5>${gymInfo["place_name"]}</h5>
+                                                      <small onclick="delete_gym(\'${gymInfoDocToString}\')">찜 취소하기</small>
+                                                    </div>
+                                                 </div>`
+                                }
+                                counter += 1;
+                                gymListWithHtml += temp_boots;
+                                $().val(gymInfo['place_name'])
+                                $("#gymsPhone1").val(gymInfo['phone'])
+                                $("#gymsAddress1").val(gymInfo['address'])
+                            })
+                            $(".container").append(gymListWithHtml)
+                        }
+                    }
+                })
             }
-        </script>
 
+            function goToMyPage(){
+                window.location.href = '/mypage'
+            }
+
+        </script>
+        <script>
+        function postiong() {
+            let content = $(`#exampleFormControlTextarea1`).val();
+
+            $.ajax({
+                type: "POST",
+                url: "/api/dajim/upload",
+                data: {'content_give':content},
+                success: function (response) {
+                    alert(response['msg'])
+                    window.location.href="/"
+                }
+
+            })
+        }
+
+        function dajim_open_box(){
+            document.getElementById('pop_dajim_posting_box').style.display = 'block';
+        }
+        function dajim_close_box(){
+            document.getElementById('pop_dajim_posting_box').style.display = 'none';
+        }
+
+        function mainpage() {
+            window.location.href="/"
+        }
+
+        function show_dajim() {
+            return $.ajax({
+                type: "GET",
+                url: "/api/dajim/show",
+                data: {},
+                success: function (response) {
+                    let randomly_selected_dajim = response['data'];
+                    $('#show_dajim').val(randomly_selected_dajim);
+                }
+
+            })
+        }
+
+        // 디테일 페이지 메소드
+        function gotoDetailPage(){
+
+        }
+
+        function detail_open_box(){
+            $('#postbox').show()
+        }
+
+        function detail_close_box() {
+            $('#postbox').hide()
+        }
+
+        function mainpage() {
+            window.location.href = "/"
+        }
+
+        function detail_savebtn() {
+            let comment = $('#detail_comment').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/project01",
+                data: {'comment_give' : comment},
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+        function show_commentList() {
+            $.ajax({
+                type: 'GET',
+                url: '/project01',
+                data: {},
+                success: function (response) {
+                    let rows = response['comment']
+                    for (let i = 0; i < rows.length; i++) {
+                        let comment = rows[i]['comment']
+                        let temp_html = `<div class="input-group">
+                                            <span class="input-group-text">닉네임</span>
+                                            <textarea class="form-control" aria-label="With textarea">${comment}</textarea>
+                                        </div>`
+                        $('#detail_list-box').append(temp_html)
+                    }
+                }
+            });
+        }
+
+        function popup_detail_open_box(){
+            document.getElementById('pop_detail_page').style.display = 'block';
+        }
+        function popup_detail_close_box(){
+            document.getElementById('pop_detail_page').style.display = 'none';
+        }
+        </script>
         <style>
+            .title {
+                font-weight: 800;
+                font-size: 9rem;
+                font-family: 'Nanum Brush Script', cursive;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
             .container_wrap{
                 width: 50%;
             }
@@ -105,7 +319,7 @@
                 transition: transform 0.2s;
             }
 
-            .head{
+            .window_head{
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -132,13 +346,195 @@
             .buttonContainer button:hover{
                 background-color: lightblue;
             }
+
+            .postiong-box {
+                /*width: 500px;*/
+                /*margin: auto;*/
+
+            }
+
+            .dajim_wrap {
+                width: 100%;
+                /*margin-top: 100px;*/
+                /*margin-bottom: auto;*/
+                /*margin-left: auto;*/
+                /*margin-right: auto;*/
+            }
+
+            .dajim_container {
+                display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  flex-direction: column;
+            }
+            #pop_dajim_posting_box{
+                display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  flex-direction: column;
+            }
+            #pop_dajim_posting_box > #background{
+                position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.5);
+                -webkit-backdrop-filter: blur(5px);
+                backdrop-filter: blur(5px);
+            }
+            #mytext_box{
+                z-index: 1;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%,-50%);
+                min-width: 700px;
+                max-width: 600px;
+                background-color: lightblue;
+                border-radius: 15px;
+                box-shadow: 0 2px 55px -25px rgb(0 0 0 / 100%);
+            }
+            #pop_btn_area{
+                display: flex;
+                align-self: center;
+                justify-content: center;
+                flex-direction: row;
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            #mytext_box > #exampleFormControlTextarea1{
+                height: 60px;
+                width: 650px;
+                margin-left: 25px;
+            }
+
+            /*디테일 css*/
+            .detail_title {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+            #detail_background{
+                position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.5);
+                -webkit-backdrop-filter: blur(5px);
+                backdrop-filter: blur(5px);
+            }
+            .detail_img_div {
+                /*background-color: blueviolet;*/
+                text-align: center;
+            }
+
+            .detail_img_div > img {
+                width: 25%;
+                height: 25%;
+                margin: 20px;
+            }
+
+            .detail_post_box {
+                width: 95%;
+                max-width: 500px;
+                margin: 20px auto 0px auto;
+                padding: 20px;
+                box-shadow: 0px 0px 3px 0px gray;
+
+            }
+
+            .detail_btns {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+
+                margin-top: 20px;
+            }
+
+            .detail_btns > btn {
+                margin: 20px;
+            }
+
+            .detail_loginbtn {
+
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+            }
         </style>
+
     </head>
-    <body style="overflow-x: hidden">
-        <div class="window">
-            <div class="head">
+    <body>
+        <section class="hero is-link">
+            <div class="hero-body has-text-centered" style="padding-bottom:1rem;margin:auto;">
+                    <h1 class="title is-white">헬스있다</h1>
+            </div>
+        </section>
+<!--    오늘의 다짐 페이지-->
+        <div class="dajim_wrap">
+            <div class="jumbotron jumbotron-fluid">
+                <div class="dajim_container">
+                    <h1 class="postiong-box"> 오늘의 다짐 </h1>
+                    <small>여러분께서 포스팅하신 오늘의 다짐들 중 하나가 랜덤하게 보여집니다. 누구나 등록할 수 있습니다 :)</small>
+                    <div class="postiong-box">
+                        <div class="form-group">
+                        <input id="show_dajim" type="text" value="ready" readonly>
+                        </div>
+                        <div class="dajim_btn_wrap">
+                            <button onclick="dajim_open_box()" id="dajim_postingBtn">포스팅</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pop_dajim_posting_box" style="display: none;">
+                <div id="background"></div>
+                <div id="mytext_box">
+                    <h5 style="display: flex; justify-content: center; margin-top: 10px">당신의 다짐을 알려주세요.</h5>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="2"
+                                      placeholder="내용 입력"></textarea>
+                    <div id="pop_btn_area">
+                        <button style="margin-right: 3px" type="button" class="btn btn-primary" id="pop_btn" onclick="postiong()">업로드</button>
+                        <button type="button" class="btn btn-primary" id="pop_cancel_btn" onclick="dajim_close_box()">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!--            디테일 페이지 팝업-->
+        <div class="pop_detail_page" id="page1" style="display: block">
+            <div id="detail_background" style="display: none"></div>
+            <div id="detail_container">
+                <div class="detail_img_div">
+                    <img id="gymsImage" src="" alt="">
+                </div>
+                <div class="detail_title">
+                    <h1 type="text" id="gymsName1"></h1>
+                    <p id="gymsAddress1"></p>
+                    <p id="gymsPhone1"></p>
+                </div>
+
+                <div class="detail_post_box" id="postbox">
+                    <div class="form-floating">
+                        <textarea id="detail_comment" class="form-control" placeholder="헬스장 후기 남기기 :)"
+                                  style="height: 100px"></textarea>
+                    </div>
+
+                    <div class="detail_btns">
+                        <button onclick="detail_savebtn()" type="button" class="btn btn-light">포스팅</button>
+                    </div>
+                </div>
+
+                <div id="detail_list-box">
+                    <p></p>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="window" style="overflow-x: hidden">
+            <div class="window_head">
                 <h2>근처의 gym 보여주기</h2>
                 <div class="buttonContainer">
+                    <input type="text" placeholder="내 주소" class="myaddress" style="width: 120px">
+                    <button class="change_loc" onclick="change_location()" style="width: 50px; margin-left:10px">go!</button>
+                    <button class="mypage" onclick="goToMyPage()" style="width: 100px">마이페이지</button>
                     <button class="prev">◁</button>
                     <button class="next">▷</button>
                 </div>

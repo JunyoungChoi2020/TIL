@@ -9,7 +9,9 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
               integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
               crossorigin="anonymous">
-
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+<!--        <script src="{{ url_for('static', filename='myjs.js') }}"></script>-->
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -22,6 +24,15 @@
 
         <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=27c10499d4831e0af6d869ca74a52920&libraries=services"></script>
         <style>
+            .title {
+                font-weight: 800;
+                font-size: 9rem;
+                font-family: 'Nanum Brush Script', cursive;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
             .head{
                 display: flex;
                 align-items: center;
@@ -50,14 +61,115 @@
                 background-color: lightblue;
             }
         </style>
+    <script>
+        $(() => {
+            // test()
+        })
+        function test(){
+                return $.ajax({
+                    type: "GET",
+                    url: `/api/posts/search`,
+                    data: {},
+                    success: function (response) {
+                        let value = ``;
+                        for (let i = 0; i < response.length; i++) {
+                            if (i % 4 == 0) {
+                                value += `<div class="row">
+                                            <div class="col-3">
+                                            <div class="card">
+                                                <img src="https://images.unsplash.com/photo-1563725911583-7d108f720483" class="card-img-top"
+                                                     alt="...">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">hello</h5>
+                                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk
+                                                        of
+                                                        the card's content.</p>
+                                                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>`
+                            } else {
+                                value = `<div class="col-3">
+                                            <div class="card">
+                                                <img src="https://images.unsplash.com/photo-1563725911583-7d108f720483" class="card-img-top"
+                                                     alt="...">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Card title</h5>
+                                                    <p class="card-text">Some quick example text to build on the card title and make up the bulk
+                                                        of
+                                                        the card's content.</p>
+                                                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                                                </div>
+                                            </div>
+                                        </div>`
+                            }
+                        }
 
+                        $('.container').append(value)
+                    }
+
+                })
+        }
+
+
+        function sign_out() {
+                // $.removeCookie('mytoken', {path: '/'});
+                // alert('로그아웃!')
+                window.location.href = "/"
+            }
+    </script>
     </head>
     <body>
-        <div class="head">
-            <h2>-헬스있다-</h2>
-                <div class="buttonContainer">
-                    <button class="logoutBtn">로그아웃</button>
-                </div>
+    <div class="title">
+        <section class="hero is-link">
+            <div class="hero-body has-text-centered" style="padding-bottom:1rem;margin:auto;">
+                    <h1 class="title is-white">헬스있다</h1>
+            </div>
+        </section>
+    </div>
+
+    <div class="main">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="" id="logoutBtn" role="button" onclick="window.location.href='/login'">Logout</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </div>
+        </nav>
+
+        <div class="container">
         </div>
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                crossorigin="anonymous">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+                integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+                crossorigin="anonymous">
+        </script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                crossorigin="anonymous">
+        </script>
+    </div>
     </body>
 </html>

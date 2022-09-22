@@ -87,9 +87,9 @@ def login():
 @app.route('/cookie_data')
 def result():
     return request.cookies.get('token')
-
-@app.route('/logout', methods=["POST"])
-def logout():
+#
+# @app.route('/logout', methods=["POST"])
+# def logout():
 
 
 if __name__ == '__main__':
